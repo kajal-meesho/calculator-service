@@ -81,4 +81,20 @@ class CalculatorServiceTest {
         assertEquals(5.0, service.calculate(2, 3, "ADD"), 0.001);
         assertEquals(5.0, service.calculate(2, 3, "Add"), 0.001);
     }
+
+    // ---- compound ----
+
+    @Test
+    void compound_normalCase_returnsCorrectValue() {
+        double result = service.compound(2.0, 4.0, 6.0);
+        // 2 * (1 + 6/4) / 4 = 2 * 2.5 / 4 = 1.25
+        assertEquals(1.25, result, 0.001);
+    }
+
+    @Test
+    void compound_bIsZero_throwsIllegalArgument() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> service.compound(1.0, 0.0, 2.0));
+        assertEquals("b cannot be zero", ex.getMessage());
+    }
 }
