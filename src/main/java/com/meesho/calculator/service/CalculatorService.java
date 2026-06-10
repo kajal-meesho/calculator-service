@@ -3,8 +3,8 @@ package com.meesho.calculator.service;
 import org.springframework.stereotype.Service;
 
 /**
- * Core calculator logic. All four basic operations.
- * divide() throws IllegalArgumentException for b == 0.
+ * Core calculator logic. All four basic operations plus compound.
+ * divide() and compound() throw IllegalArgumentException for b == 0.
  */
 @Service
 public class CalculatorService {
@@ -24,5 +24,12 @@ public class CalculatorService {
                 throw new IllegalArgumentException("Unknown operation: " + operation
                         + " — supported: add, subtract, multiply, divide");
         }
+    }
+
+    public double compound(double a, double b, double c) {
+        if (b == 0.0) {
+            throw new IllegalArgumentException("b cannot be zero");
+        }
+        return a * (1.0 + c / b) / b;
     }
 }
