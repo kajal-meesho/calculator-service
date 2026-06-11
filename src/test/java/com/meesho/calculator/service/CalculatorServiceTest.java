@@ -97,4 +97,25 @@ class CalculatorServiceTest {
                 () -> service.compound(1.0, 0.0, 2.0));
         assertEquals("b cannot be zero", ex.getMessage());
     }
+
+    // ---- power ----
+
+    @Test
+    void power_normalCase_returnsCorrectValue() {
+        // 2^3 = 8
+        assertEquals(8.0, service.power(2.0, 3.0), 0.001);
+        // 5^0 = 1
+        assertEquals(1.0, service.power(5.0, 0.0), 0.001);
+        // 0^5 = 0
+        assertEquals(0.0, service.power(0.0, 5.0), 0.001);
+        // 2^(-2) = 0.25
+        assertEquals(0.25, service.power(2.0, -2.0), 0.001);
+    }
+
+    @Test
+    void power_zeroToZero_throwsIllegalArgument() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> service.power(0.0, 0.0));
+        assertEquals("0^0 is undefined", ex.getMessage());
+    }
 }

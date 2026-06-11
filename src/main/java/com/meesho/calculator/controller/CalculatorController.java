@@ -2,10 +2,12 @@ package com.meesho.calculator.controller;
 
 import com.meesho.calculator.model.CalculateRequest;
 import com.meesho.calculator.model.CompoundRequest;
+import com.meesho.calculator.model.PowerRequest;
 import com.meesho.calculator.service.CalculatorService;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,9 +23,11 @@ import java.util.concurrent.TimeUnit;
  *
  * POST /calculate        — { a, b, operation } → { result }
  * POST /compound         — { a, b, c } → { result }
+ * POST /power            — { a, b } → { result }
  * GET  /health           — { status: "UP" }
  * GET  /metrics/summary  — aggregated request metrics
  */
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class CalculatorController {
@@ -45,6 +49,16 @@ public class CalculatorController {
     public ResponseEntity<Map<String, Object>> compound(@RequestBody CompoundRequest req) {
         try {
             double result = calculatorService.compound(req.getA(), req.getB(), req.getC());
+            return ResponseEntity.ok(Map.of("result", result));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/power")
+    public ResponseEntity<Map<String, Object>> power(@RequestBody PowerRequest req) {
+        try {
+            double result = calculatorService.power(req.getA(), req.getB());
             return ResponseEntity.ok(Map.of("result", result));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
