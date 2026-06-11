@@ -3,9 +3,8 @@ package com.meesho.calculator.service;
 import org.springframework.stereotype.Service;
 
 /**
- * Core calculator logic. All four basic operations plus sqrt.
+ * Core calculator logic. All four basic operations.
  * divide() throws IllegalArgumentException for b == 0.
- * sqrt() throws IllegalArgumentException for a < 0.
  */
 @Service
 public class CalculatorService {
@@ -25,12 +24,5 @@ public class CalculatorService {
                 throw new IllegalArgumentException("Unknown operation: " + operation
                         + " — supported: add, subtract, multiply, divide");
         }
-    }
-
-    public double sqrt(double a) {
-        if (a < 0) {
-            throw new IllegalArgumentException("cannot sqrt negative number");
-        }
-        return Math.sqrt(a);
     }
 }
