@@ -2,10 +2,6 @@ package com.meesho.calculator.service;
 
 import org.springframework.stereotype.Service;
 
-/**
- * Core calculator logic. All four basic operations plus compound.
- * divide() and compound() throw IllegalArgumentException for b == 0.
- */
 @Service
 public class CalculatorService {
 
@@ -26,10 +22,10 @@ public class CalculatorService {
         }
     }
 
-    public double compound(double a, double b, double c) {
-        if (b == 0.0) {
-            throw new IllegalArgumentException("b cannot be zero");
+    public double power(double a, double b) {
+        if (a == 0 && b == 0) {
+            throw new IllegalArgumentException("0^0 is undefined");
         }
-        return a * (1.0 + c / b) / b;
+        return Math.pow(a, b);
     }
 }
