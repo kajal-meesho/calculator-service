@@ -1,28 +1,40 @@
 package com.meesho.calculator.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-/**
- * Core calculator logic. All four basic operations.
- * divide() throws IllegalArgumentException for b == 0.
- */
+@Slf4j
 @Service
 public class CalculatorService {
 
-    public double calculate(double a, double b, String operation) {
-        if (operation == null) {
-            throw new IllegalArgumentException("operation must not be null");
+    public double add(double a, double b) {
+        log.info("Adding {} + {}", a, b);
+        return a + b;
+    }
+
+    public double subtract(double a, double b) {
+        log.info("Subtracting {} - {}", a, b);
+        return a - b;
+    }
+
+    public double multiply(double a, double b) {
+        log.info("Multiplying {} * {}", a, b);
+        return a * b;
+    }
+
+    public double divide(double a, double b) {
+        if (b == 0) {
+            throw new IllegalArgumentException("Cannot divide by zero");
         }
-        switch (operation.trim().toLowerCase()) {
-            case "add":      return a + b;
-            case "subtract": return a - b;
-            case "multiply": return a * b;
-            case "divide":
-                if (b == 0) throw new IllegalArgumentException("Cannot divide by zero");
-                return a / b;
-            default:
-                throw new IllegalArgumentException("Unknown operation: " + operation
-                        + " — supported: add, subtract, multiply, divide");
+        log.info("Dividing {} / {}", a, b);
+        return a / b;
+    }
+
+    public double sqrt(double a) {
+        if (a < 0) {
+            throw new IllegalArgumentException("cannot sqrt negative number");
         }
+        log.info("Square root of {}", a);
+        return Math.sqrt(a);
     }
 }
