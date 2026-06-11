@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculator Service</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f1f5f9;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+      padding: 40px 36px 36px;
+      width: 100%;
+      max-width: 420px;
+      position: relative;
+    }
+
+    .health-badge {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #16a34a;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .health-badge .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #16a34a;
+      animation: pulse 2s infinite;
+    }
+    .health-badge.unhealthy { color: #dc2626; }
+    .health-badge.unhealthy .dot { background: #dc2626; animation: none; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+    .subtitle {
+      font-size: 13px;
+      color: #64748b;
+      margin-bottom: 28px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 6px;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 15px;
+      color: #0f172a;
+      outline: none;
+      transition: border-color 0.15s;
+      margin-bottom: 16px;
+      background: #f8fafc;
+    }
+    input[type="number"]:focus {
+      border-color: #2563eb;
+      background: #fff;
+    }
+
+    .inputs-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .ops-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .ops-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 10px;
+    }
+
+    button.op {
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: #2563eb;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+    button.op:hover { background: #1d4ed8; }
+    button.op:active { transform: scale(0.97); }
+
+    .result-box {
+      margin-top: 24px;
+      padding: 16px 18px;
+      border-radius: 10px;
+      background: #f0f7ff;
+      border: 1.5px solid #bfdbfe;
+      min-height: 54px;
+      display: flex;
+      align-items: center;
+    }
+    .result-box .result-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: #2563eb;
+      margin-right: 10px;
+    }
+    .result-box .result-value {
+      font-size: 22px;
+      font-weight: 700;
+      color: #1e40af;
+    }
+    .result-box.error {
+      background: #fff1f2;
+      border-color: #fecaca;
+    }
+    .result-box.error .result-label { color: #dc2626; }
+    .result-box.error .result-value { font-size: 14px; color: #b91c1c; font-weight: 500; }
+    .result-box.empty { background: #f8fafc; border-color: #e2e8f0; }
+    .result-box.empty .result-value { font-size: 14px; color: #94a3b8; font-weight: 400; }
+
+    .metrics-card {
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+      padding: 28px 36px 28px;
+      width: 100%;
+      max-width: 420px;
+      margin-top: 20px;
+    }
+    .metrics-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+    .metrics-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    button.refresh-btn {
+      padding: 7px 14px;
+      border: none;
+      border-radius: 7px;
+      background: #2563eb;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    button.refresh-btn:hover { background: #1d4ed8; }
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .metric-cell {
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+    .metric-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+    }
+    .metric-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    .metric-value.error-high { color: #dc2626; }
+    .metric-value.error-ok  { color: #16a34a; }
+    .metrics-timestamp {
+      margin-top: 14px;
+      font-size: 11px;
+      color: #94a3b8;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+  <div style="display:flex;flex-direction:column;align-items:center;padding:32px 16px;">
+  <div class="card" style="max-width:420px;width:100%;">
+    <div class="health-badge" id="healthBadge">
+      <span class="dot"></span>
+      <span id="healthText">Checking...</span>
+    </div>
+
+    <h1>Calculator Service</h1>
+    <p class="subtitle">v1.0 &mdash; Stable</p>
+
+    <div class="inputs-row">
+      <div>
+        <label for="inputA">Value A</label>
+        <input type="number" id="inputA" placeholder="e.g. 10" step="any" />
+      </div>
+      <div>
+        <label for="inputB">Value B</label>
+        <input type="number" id="inputB" placeholder="e.g. 5" step="any" />
+      </div>
+    </div>
+
+    <p class="ops-label">Operation</p>
+    <div class="ops-grid">
+      <button class="op" onclick="calculate('add')">＋ Add</button>
+      <button class="op" onclick="calculate('subtract')">－ Subtract</button>
+      <button class="op" onclick="calculate('multiply')">× Multiply</button>
+      <button class="op" onclick="calculate('divide')">÷ Divide</button>
+    </div>
+
+    <div class="result-box empty" id="resultBox">
+      <span class="result-label" id="resultLabel">Result</span>
+      <span class="result-value" id="resultValue">Enter values and pick an operation</span>
+    </div>
+  </div>
+
+  <div class="metrics-card" style="max-width:420px;width:100%;">
+    <div class="metrics-header">
+      <span class="metrics-title">📊 Live Metrics</span>
+      <button class="refresh-btn" onclick="loadMetrics()">Refresh Metrics</button>
+    </div>
+    <div class="metrics-grid">
+      <div class="metric-cell">
+        <div class="metric-label">Total Requests</div>
+        <div class="metric-value" id="m-total">—</div>
+      </div>
+      <div class="metric-cell">
+        <div class="metric-label">Success (2xx)</div>
+        <div class="metric-value" id="m-2xx">—</div>
+      </div>
+      <div class="metric-cell">
+        <div class="metric-label">Errors (4xx+5xx)</div>
+        <div class="metric-value" id="m-errors">—</div>
+      </div>
+      <div class="metric-cell">
+        <div class="metric-label">Error Rate %</div>
+        <div class="metric-value" id="m-errpct">—</div>
+      </div>
+      <div class="metric-cell">
+        <div class="metric-label">Avg Latency ms</div>
+        <div class="metric-value" id="m-avg">—</div>
+      </div>
+      <div class="metric-cell">
+        <div class="metric-label">p99 Latency ms</div>
+        <div class="metric-value" id="m-p99">—</div>
+      </div>
+    </div>
+    <div class="metrics-timestamp" id="m-ts">Not yet loaded</div>
+  </div>
+  </div>
+
+  <script>
+    async function checkHealth() {
+      const badge = document.getElementById('healthBadge');
+      const text = document.getElementById('healthText');
+      try {
+        const res = await fetch('/health');
+        const data = await res.json();
+        if (res.ok && data.status === 'UP') {
+          badge.classList.remove('unhealthy');
+          text.textContent = 'Service Healthy';
+        } else {
+          badge.classList.add('unhealthy');
+          text.textContent = 'Service Unhealthy';
+        }
+      } catch (e) {
+        badge.classList.add('unhealthy');
+        text.textContent = 'Unreachable';
+      }
+    }
+
+    async function calculate(operation) {
+      const a = document.getElementById('inputA').value;
+      const b = document.getElementById('inputB').value;
+      const box = document.getElementById('resultBox');
+      const label = document.getElementById('resultLabel');
+      const value = document.getElementById('resultValue');
+
+      if (a === '' || b === '') {
+        box.className = 'result-box error';
+        label.textContent = 'Error';
+        value.textContent = 'Please enter both values A and B.';
+        return;
+      }
+
+      try {
+        const res = await fetch('/calculate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ a: parseFloat(a), b: parseFloat(b), operation })
+        });
+        const data = await res.json();
+
+        if (res.ok && data.result !== undefined) {
+          box.className = 'result-box';
+          label.textContent = operation.charAt(0).toUpperCase() + operation.slice(1);
+          value.textContent = data.result;
+        } else {
+          box.className = 'result-box error';
+          label.textContent = 'Error';
+          value.textContent = data.error || 'Unexpected error';
+        }
+      } catch (e) {
+        box.className = 'result-box error';
+        label.textContent = 'Error';
+        value.textContent = 'Network error — is the service running?';
+      }
+    }
+
+    async function loadMetrics() {
+      try {
+        const res = await fetch('/metrics/summary');
+        const d = await res.json();
+        document.getElementById('m-total').textContent  = d.totalRequests ?? '—';
+        document.getElementById('m-2xx').textContent    = d.statusCode2xx ?? '—';
+        document.getElementById('m-errors').textContent = d.errorCount ?? '—';
+        document.getElementById('m-avg').textContent    = d.avgLatencyMs ?? '—';
+        document.getElementById('m-p99').textContent    = d.p99LatencyMs ?? '—';
+
+        const errPct = d.errorRatePct ?? 0;
+        const errEl = document.getElementById('m-errpct');
+        errEl.textContent = errPct + '%';
+        errEl.className = 'metric-value ' + (errPct > 5 ? 'error-high' : 'error-ok');
+
+        const now = new Date();
+        document.getElementById('m-ts').textContent =
+          'Last updated: ' + now.toTimeString().slice(0, 8);
+      } catch (e) {
+        document.getElementById('m-ts').textContent = 'Failed to load metrics';
+      }
+    }
+
+    checkHealth();
+    loadMetrics();
+    setInterval(loadMetrics, 10000);
+  </script>
+</body>
+</html>
