@@ -49,4 +49,17 @@ public class CalculatorService {
         }
         return Math.pow(a, b);
     }
+
+    /**
+     * Computes the square root of a.
+     * @param a non-negative number
+     * @return sqrt(a)
+     * @throws IllegalArgumentException if a is negative
+     */
+    public double sqrt(double a) {
+        if (a < 0) {
+            throw new IllegalArgumentException("cannot sqrt negative number");
+        }
+        return Math.sqrt(a);
+    }
 }

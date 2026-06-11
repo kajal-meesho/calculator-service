@@ -118,4 +118,20 @@ class CalculatorServiceTest {
                 () -> service.power(0.0, 0.0));
         assertEquals("0^0 is undefined", ex.getMessage());
     }
+
+    // ---- sqrt ----
+
+    @Test
+    void sqrt_positiveNumber_returnsSquareRoot() {
+        assertEquals(3.0, service.sqrt(9.0), 0.001);
+        assertEquals(0.0, service.sqrt(0.0), 0.001);
+        assertEquals(Math.sqrt(2.0), service.sqrt(2.0), 0.001);
+    }
+
+    @Test
+    void sqrt_negativeNumber_throwsIllegalArgument() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> service.sqrt(-1.0));
+        assertEquals("cannot sqrt negative number", ex.getMessage());
+    }
 }
