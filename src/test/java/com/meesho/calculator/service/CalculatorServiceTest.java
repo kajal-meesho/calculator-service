@@ -81,4 +81,23 @@ class CalculatorServiceTest {
         assertEquals(5.0, service.calculate(2, 3, "ADD"), 0.001);
         assertEquals(5.0, service.calculate(2, 3, "Add"), 0.001);
     }
+
+    // ---- sqrt ----
+
+    @Test
+    void sqrt_positive_returnsSquareRoot() {
+        assertEquals(3.0, service.sqrt(9), 0.001);
+    }
+
+    @Test
+    void sqrt_negative_throwsIllegalArgument() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> service.sqrt(-1));
+        assertEquals("cannot sqrt negative number", ex.getMessage());
+    }
+
+    @Test
+    void sqrt_zero_returnsZero() {
+        assertEquals(0.0, service.sqrt(0), 0.001);
+    }
 }

@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
  * REST API for the calculator service.
  *
  * POST /calculate        — { a, b, operation } → { result }
+ * POST /sqrt            — { a } → { result }
  * GET  /health           — { status: "UP" }
  * GET  /metrics/summary  — aggregated request metrics
  */
@@ -33,6 +34,16 @@ public class CalculatorController {
     public ResponseEntity<Map<String, Object>> calculate(@RequestBody CalculateRequest req) {
         try {
             double result = calculatorService.calculate(req.getA(), req.getB(), req.getOperation());
+            return ResponseEntity.ok(Map.of("result", result));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/sqrt")
+    public ResponseEntity<Map<String, Object>> sqrt(@RequestBody CalculateRequest req) {
+        try {
+            double result = calculatorService.sqrt(req.getA());
             return ResponseEntity.ok(Map.of("result", result));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
