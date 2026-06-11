@@ -3,6 +3,7 @@ package com.meesho.calculator.controller;
 import com.meesho.calculator.model.CalculateRequest;
 import com.meesho.calculator.model.CompoundRequest;
 import com.meesho.calculator.model.PowerRequest;
+import com.meesho.calculator.model.SqrtRequest;
 import com.meesho.calculator.service.CalculatorService;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
@@ -24,6 +25,7 @@ import java.util.concurrent.TimeUnit;
  * POST /calculate        — { a, b, operation } → { result }
  * POST /compound         — { a, b, c } → { result }
  * POST /power            — { a, b } → { result }
+ * POST /sqrt             — { a } → { result }
  * GET  /health           — { status: "UP" }
  * GET  /metrics/summary  — aggregated request metrics
  */
@@ -59,6 +61,16 @@ public class CalculatorController {
     public ResponseEntity<Map<String, Object>> power(@RequestBody PowerRequest req) {
         try {
             double result = calculatorService.power(req.getA(), req.getB());
+            return ResponseEntity.ok(Map.of("result", result));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/sqrt")
+    public ResponseEntity<Map<String, Object>> sqrt(@RequestBody SqrtRequest req) {
+        try {
+            double result = calculatorService.sqrt(req.getA());
             return ResponseEntity.ok(Map.of("result", result));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
