@@ -1,84 +1,54 @@
 package com.meesho.calculator.service;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(MockitoExtension.class)
 class CalculatorServiceTest {
 
-    private final CalculatorService service = new CalculatorService();
-
-    // ---- add ----
+    private final CalculatorService calculatorService = new CalculatorService();
 
     @Test
-    void add_positivePlusPositive() {
-        assertEquals(5.0, service.calculate(2, 3, "add"), 0.001);
+    void add_positiveNumbers_returnsSum() {
+        assertEquals(5.0, calculatorService.add(2.0, 3.0));
     }
 
     @Test
-    void add_negativePlusPositive() {
-        assertEquals(-1.0, service.calculate(-3, 2, "add"), 0.001);
+    void subtract_positiveNumbers_returnsDifference() {
+        assertEquals(2.0, calculatorService.subtract(5.0, 3.0));
     }
 
     @Test
-    void add_zeros() {
-        assertEquals(0.0, service.calculate(0, 0, "add"), 0.001);
-    }
-
-    // ---- subtract ----
-
-    @Test
-    void subtract_positives() {
-        assertEquals(1.0, service.calculate(3, 2, "subtract"), 0.001);
+    void multiply_positiveNumbers_returnsProduct() {
+        assertEquals(15.0, calculatorService.multiply(3.0, 5.0));
     }
 
     @Test
-    void subtract_sameNegatives() {
-        assertEquals(0.0, service.calculate(-2, -2, "subtract"), 0.001);
-    }
-
-    // ---- multiply ----
-
-    @Test
-    void multiply_positives() {
-        assertEquals(6.0, service.calculate(2, 3, "multiply"), 0.001);
+    void divide_positiveNumbers_returnsQuotient() {
+        assertEquals(2.0, calculatorService.divide(6.0, 3.0));
     }
 
     @Test
-    void multiply_byZero() {
-        assertEquals(0.0, service.calculate(5, 0, "multiply"), 0.001);
+    void divide_byZero_throwsException() {
+        assertThrows(IllegalArgumentException.class, () -> calculatorService.divide(1.0, 0.0));
     }
 
-    // ---- divide ----
-
+    // New sqrt tests
     @Test
-    void divide_positiveDivisor() {
-        assertEquals(2.5, service.calculate(5, 2, "divide"), 0.001);
-    }
-
-    @Test
-    void divide_byZero_throwsIllegalArgument() {
-        assertThrows(IllegalArgumentException.class,
-                () -> service.calculate(1, 0, "divide"));
-    }
-
-    // ---- operation validation ----
-
-    @Test
-    void unknownOperation_throwsIllegalArgument() {
-        assertThrows(IllegalArgumentException.class,
-                () -> service.calculate(1, 2, "modulo"));
+    void sqrt_positiveNumber_returnsSquareRoot() {
+        assertEquals(3.0, calculatorService.sqrt(9.0), 1e-9);
     }
 
     @Test
-    void nullOperation_throwsIllegalArgument() {
-        assertThrows(IllegalArgumentException.class,
-                () -> service.calculate(1, 2, null));
+    void sqrt_zero_returnsZero() {
+        assertEquals(0.0, calculatorService.sqrt(0.0));
     }
 
     @Test
-    void operationIsCaseInsensitive() {
-        assertEquals(5.0, service.calculate(2, 3, "ADD"), 0.001);
-        assertEquals(5.0, service.calculate(2, 3, "Add"), 0.001);
+    void sqrt_negativeNumber_throwsException() {
+        assertThrows(IllegalArgumentException.class, () -> calculatorService.sqrt(-1.0));
     }
 }
