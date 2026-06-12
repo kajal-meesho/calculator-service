@@ -1,5 +1,6 @@
 package com.meesho.calculator.controller;
 
+import com.meesho.calculator.config.BackgroundConfig;
 import com.meesho.calculator.model.CalculateRequest;
 import com.meesho.calculator.service.CalculatorService;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -28,6 +29,7 @@ public class CalculatorController {
 
     private final CalculatorService calculatorService;
     private final MeterRegistry registry;
+    private final BackgroundConfig backgroundConfig;
 
     @PostMapping("/calculate")
     public ResponseEntity<Map<String, Object>> calculate(@RequestBody CalculateRequest req) {
@@ -42,6 +44,18 @@ public class CalculatorController {
     @GetMapping("/health")
     public ResponseEntity<Map<String, String>> health() {
         return ResponseEntity.ok(Map.of("status", "UP"));
+    }
+
+    /**
+     * Returns the background colour configured in application.properties.
+     * The LLM / Kevin only needs to change {@code background.color} in
+     * application.properties — this endpoint always reflects that value.
+     *
+     * Response: { "color": "#191970" }
+     */
+    @GetMapping("/background")
+    public ResponseEntity<Map<String, String>> background() {
+        return ResponseEntity.ok(Map.of("color", backgroundConfig.getColor()));
     }
 
     @GetMapping("/metrics/summary")
