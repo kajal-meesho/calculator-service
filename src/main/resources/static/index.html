@@ -371,6 +371,9 @@
       }
     }
 
+    // Apply background colour from application.properties via GET /background
+    fetch('/background').then(r => r.json()).then(d => { document.body.style.background = d.color; });
+
     checkHealth();
     loadMetrics();
     setInterval(loadMetrics, 10000);
