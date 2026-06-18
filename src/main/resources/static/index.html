@@ -106,9 +106,20 @@
     }
     .btn-clear:hover { background: rgba(255, 100, 100, 0.4); }
 
-    /* .btn-zero { grid-column: span 2; } -- removed as per instructions */
+    /* Removed .btn-zero rule */
 
     .error { color: #ff9999 !important; font-size: 1rem !important; }
+
+    /* --- FEEDBACK: Style for x² button --- */
+    .btn-square {
+      background: #f0c040;
+      color: #3f0e40;
+      font-weight: 700;
+    }
+    .btn-square:hover {
+      background: #ffd880;
+      color: #3f0e40;
+    }
   </style>
 </head>
 <body>
@@ -140,7 +151,7 @@
       <button class="btn-op"  onclick="setOp('plus')">+</button>
 
       <button class="btn-num" onclick="inputDigit('0')">0</button>
-      <button class="btn-op" onclick="squareCurrent()">x²</button>
+      <button class="btn-square" onclick="squareCurrent()">x²</button>
       <button class="btn-num" onclick="inputPlusMinus()">+/−</button>
       <button class="btn-equals" onclick="calculate()">=</button>
     </div>
@@ -227,6 +238,7 @@
       currentInput = '0'; updateDisplay('0');
     }
 
+    // --- FEEDBACK: Square function JS handler ---
     async function squareCurrent() {
       const n = parseFloat(currentInput);
       exprDisplay.textContent = n + '² =';
