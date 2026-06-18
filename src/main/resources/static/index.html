@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Meesho Calculator</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #3f0e40 0%, #831a85 50%, #b44eb6 100%);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    h1 {
+      color: #fff;
+      font-size: 1.4rem;
+      margin-bottom: 24px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0.9;
+    }
+
+    .calculator {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 24px;
+      padding: 28px;
+      width: 320px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    }
+
+    .display {
+      background: rgba(0, 0, 0, 0.35);
+      border-radius: 14px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      text-align: right;
+      min-height: 80px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    .display .expression {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.5);
+      min-height: 20px;
+      margin-bottom: 4px;
+    }
+
+    .display .result {
+      font-size: 2.2rem;
+      font-weight: 300;
+      color: #fff;
+      word-break: break-all;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    button {
+      padding: 18px 0;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-weight: 500;
+    }
+
+    button:active { transform: scale(0.94); }
+
+    .btn-num {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
+    .btn-num:hover { background: rgba(255, 255, 255, 0.25); }
+
+    .btn-op {
+      background: rgba(234, 189, 251, 0.25);
+      color: #eabdfb;
+    }
+    .btn-op:hover { background: rgba(234, 189, 251, 0.4); }
+    .btn-op.active-op { background: #eabdfb; color: #3f0e40; }
+
+    .btn-equals {
+      background: #eabdfb;
+      color: #3f0e40;
+      font-size: 1.3rem;
+    }
+    .btn-equals:hover { background: #f5d6ff; }
+
+    .btn-clear {
+      background: rgba(255, 100, 100, 0.25);
+      color: #ff9999;
+    }
+    .btn-clear:hover { background: rgba(255, 100, 100, 0.4); }
+
+    .btn-zero { grid-column: span 2; }
+
+    .error { color: #ff9999 !important; font-size: 1rem !important; }
+  </style>
+</head>
+<body>
+  <h1>Meesho Calculator</h1>
+  <div class="calculator">
+    <div class="display">
+      <div class="expression" id="expression"></div>
+      <div class="result" id="result">0</div>
+    </div>
+    <div class="buttons">
+      <button class="btn-clear" onclick="clearAll()">AC</button>
+      <button class="btn-clear" onclick="clearEntry()">CE</button>
+      <button class="btn-num"   onclick="inputDecimal()">.</button>
+      <button class="btn-op"    onclick="setOp('divide')">÷</button>
+
+      <button class="btn-num" onclick="inputDigit('7')">7</button>
+      <button class="btn-num" onclick="inputDigit('8')">8</button>
+      <button class="btn-num" onclick="inputDigit('9')">9</button>
+      <button class="btn-op"  onclick="setOp('multiply')">×</button>
+
+      <button class="btn-num" onclick="inputDigit('4')">4</button>
+      <button class="btn-num" onclick="inputDigit('5')">5</button>
+      <button class="btn-num" onclick="inputDigit('6')">6</button>
+      <button class="btn-op"  onclick="setOp('minus')">−</button>
+
+      <button class="btn-num" onclick="inputDigit('1')">1</button>
+      <button class="btn-num" onclick="inputDigit('2')">2</button>
+      <button class="btn-num" onclick="inputDigit('3')">3</button>
+      <button class="btn-op"  onclick="setOp('plus')">+</button>
+
+      <button class="btn-num btn-zero" onclick="inputDigit('0')">0</button>
+      <button class="btn-num" onclick="inputPlusMinus()">+/−</button>
+      <button class="btn-equals" onclick="calculate()">=</button>
+    </div>
+  </div>
+
+  <script>
+    let firstNum = null;
+    let currentOp = null;
+    let currentInput = '0';
+    let justCalculated = false;
+
+    const display = document.getElementById('result');
+    const exprDisplay = document.getElementById('expression');
+
+    function updateDisplay(val) {
+      display.classList.remove('error');
+      display.textContent = val;
+    }
+
+    function inputDigit(d) {
+      if (justCalculated) { currentInput = d; justCalculated = false; }
+      else currentInput = currentInput === '0' ? d : currentInput + d;
+      updateDisplay(currentInput);
+    }
+
+    function inputDecimal() {
+      if (justCalculated) { currentInput = '0.'; justCalculated = false; }
+      else if (!currentInput.includes('.')) currentInput += '.';
+      updateDisplay(currentInput);
+    }
+
+    function inputPlusMinus() {
+      currentInput = String(parseFloat(currentInput) * -1);
+      updateDisplay(currentInput);
+    }
+
+    function setOp(op) {
+      document.querySelectorAll('.btn-op').forEach(b => b.classList.remove('active-op'));
+      event.target.classList.add('active-op');
+      firstNum = parseFloat(currentInput);
+      currentOp = op;
+      justCalculated = false;
+      exprDisplay.textContent = firstNum + ' ' + opSymbol(op);
+      currentInput = '0';
+    }
+
+    function opSymbol(op) {
+      return { plus: '+', minus: '−', multiply: '×', divide: '÷' }[op] || op;
+    }
+
+    async function calculate() {
+      if (firstNum === null || currentOp === null) return;
+      const b = parseFloat(currentInput);
+      exprDisplay.textContent = firstNum + ' ' + opSymbol(currentOp) + ' ' + b + ' =';
+      try {
+        const res = await fetch('/api/' + currentOp, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ a: firstNum, b })
+        });
+        const data = await res.json();
+        if (data.error) {
+          display.classList.add('error');
+          display.textContent = data.error;
+        } else {
+          updateDisplay(data.result);
+          currentInput = String(data.result);
+        }
+      } catch (e) {
+        display.classList.add('error');
+        display.textContent = 'Error';
+      }
+      document.querySelectorAll('.btn-op').forEach(b => b.classList.remove('active-op'));
+      firstNum = null; currentOp = null; justCalculated = true;
+    }
+
+    function clearAll() {
+      firstNum = null; currentOp = null; currentInput = '0'; justCalculated = false;
+      updateDisplay('0'); exprDisplay.textContent = '';
+      document.querySelectorAll('.btn-op').forEach(b => b.classList.remove('active-op'));
+    }
+
+    function clearEntry() {
+      currentInput = '0'; updateDisplay('0');
+    }
+  </script>
+</body>
+</html>
