@@ -152,7 +152,7 @@
 
       <button class="btn-num" onclick="inputDigit('0')">0</button>
       <button class="btn-square" onclick="squareCurrent()">x²</button>
-      <button class="btn-num" onclick="inputPlusMinus()">+/−</button>
+      <button class="btn-square" onclick="sqrtCurrent()">√</button>
       <button class="btn-equals" onclick="calculate()">=</button>
     </div>
   </div>
@@ -183,10 +183,7 @@
       updateDisplay(currentInput);
     }
 
-    function inputPlusMinus() {
-      currentInput = String(parseFloat(currentInput) * -1);
-      updateDisplay(currentInput);
-    }
+    // Removed inputPlusMinus()
 
     function setOp(op) {
       document.querySelectorAll('.btn-op').forEach(b => b.classList.remove('active-op'));
@@ -251,6 +248,31 @@
         const data = await res.json();
         updateDisplay(data.result);
         currentInput = String(data.result);
+      } catch (e) {
+        display.classList.add('error');
+        display.textContent = 'Error';
+      }
+      justCalculated = true;
+    }
+
+    // --- Square root function JS handler ---
+    async function sqrtCurrent() {
+      const n = parseFloat(currentInput);
+      exprDisplay.textContent = '√' + n + ' =';
+      try {
+        const res = await fetch('/api/sqrt', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ n })
+        });
+        const data = await res.json();
+        if (!res.ok || data.error) {
+          display.classList.add('error');
+          display.textContent = data.error || 'Error';
+        } else {
+          updateDisplay(data.result);
+          currentInput = String(data.result);
+        }
       } catch (e) {
         display.classList.add('error');
         display.textContent = 'Error';

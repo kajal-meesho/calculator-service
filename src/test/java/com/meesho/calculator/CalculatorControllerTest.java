@@ -99,4 +99,49 @@ class CalculatorControllerTest {
                 .andExpect(jsonPath("$.expression", is("-3.0²")))
                 .andExpect(jsonPath("$.input", is(-3.0)));
     }
+
+    @Test
+    void sqrtOf9() throws Exception {
+        mockMvc.perform(post("/api/sqrt")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"n\": 9}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.result", is(3.0)))
+                .andExpect(jsonPath("$.operation", is("sqrt")))
+                .andExpect(jsonPath("$.expression", is("√9.0")))
+                .andExpect(jsonPath("$.input", is(9.0)));
+    }
+
+    @Test
+    void sqrtOf2() throws Exception {
+        mockMvc.perform(post("/api/sqrt")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"n\": 2}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.result", is(Math.sqrt(2))))
+                .andExpect(jsonPath("$.operation", is("sqrt")))
+                .andExpect(jsonPath("$.expression", is("√2.0")))
+                .andExpect(jsonPath("$.input", is(2.0)));
+    }
+
+    @Test
+    void sqrtOf0() throws Exception {
+        mockMvc.perform(post("/api/sqrt")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"n\": 0}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.result", is(0.0)))
+                .andExpect(jsonPath("$.operation", is("sqrt")))
+                .andExpect(jsonPath("$.expression", is("√0.0")))
+                .andExpect(jsonPath("$.input", is(0.0)));
+    }
+
+    @Test
+    void sqrtOfNegativeReturnsBadRequest() throws Exception {
+        mockMvc.perform(post("/api/sqrt")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"n\": -4}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("error")));
+    }
 }
