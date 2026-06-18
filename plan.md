@@ -114,3 +114,5 @@ _(none)_
 - 2026-06-18 — AI implemented feedback: show full equation in expression line after sqrt result; emitting READY.
 - 2026-06-18T20:41:28Z — Kevin: feedback impl 2/2: Show full equation in expression line after sqrt result (e.g., "√9.0 = 3.0")
 - 2026-06-18T20:42:14Z — <@U0B42FAHQ6L> approved feedback impl 2
+- 2026-06-18T20:42:19Z — Feedback 2/2 implemented and pushed
+- 2026-06-18T20:42:22Z — <@U0B42FAHQ6L> approved feedback impl 2
