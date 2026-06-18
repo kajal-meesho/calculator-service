@@ -34,4 +34,12 @@ public class CalculatorController {
         return ResponseEntity.ok(new CalculatorResponse(req.getA() / req.getB(), "divide",
                 req.getA() + " ÷ " + req.getB()));
     }
+
+    @PostMapping(value = "/square", produces = MediaType.APPLICATION_JSON_VALUE)
+    public CalculatorResponse square(@RequestBody SquareRequest req) {
+        double n = req.getN();
+        double result = n * n;
+        String expr = n + "²";
+        return new CalculatorResponse(result, "square", expr, n);
+    }
 }

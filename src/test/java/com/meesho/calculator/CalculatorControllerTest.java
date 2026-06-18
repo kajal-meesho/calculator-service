@@ -63,4 +63,40 @@ class CalculatorControllerTest {
                 .content("{\"a\": 10, \"b\": 0}"))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    void squareOf4() throws Exception {
+        mockMvc.perform(post("/api/square")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"n\": 4}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.result", is(16.0)))
+                .andExpect(jsonPath("$.operation", is("square")))
+                .andExpect(jsonPath("$.expression", is("4.0²")))
+                .andExpect(jsonPath("$.input", is(4.0)));
+    }
+
+    @Test
+    void squareOf0() throws Exception {
+        mockMvc.perform(post("/api/square")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"n\": 0}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.result", is(0.0)))
+                .andExpect(jsonPath("$.operation", is("square")))
+                .andExpect(jsonPath("$.expression", is("0.0²")))
+                .andExpect(jsonPath("$.input", is(0.0)));
+    }
+
+    @Test
+    void squareOfMinus3() throws Exception {
+        mockMvc.perform(post("/api/square")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"n\": -3}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.result", is(9.0)))
+                .andExpect(jsonPath("$.operation", is("square")))
+                .andExpect(jsonPath("$.expression", is("-3.0²")))
+                .andExpect(jsonPath("$.input", is(-3.0)));
+    }
 }
