@@ -42,4 +42,15 @@ public class CalculatorController {
         String expr = n + "²";
         return new CalculatorResponse(result, "square", expr, n);
     }
+
+    @PostMapping(value = "/sqrt", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> sqrt(@RequestBody SqrtRequest req) {
+        double n = req.getN();
+        if (n < 0) {
+            return ResponseEntity.badRequest().body("{\"error\": \"Square root of negative number is not allowed\"}");
+        }
+        double result = Math.sqrt(n);
+        String expr = "√" + n;
+        return ResponseEntity.ok(new CalculatorResponse(result, "sqrt", expr, n));
+    }
 }
