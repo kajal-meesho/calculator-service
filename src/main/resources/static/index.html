@@ -262,6 +262,8 @@
         const data = await res.json();
         updateDisplay(data.result);
         currentInput = String(data.result);
+        // Show full equation after result
+        exprDisplay.textContent = n + '² = ' + data.result;
       } catch (e) {
         display.classList.add('error');
         display.textContent = 'Error';
@@ -286,6 +288,8 @@
         } else {
           updateDisplay(data.result);
           currentInput = String(data.result);
+          // Show full equation after result, e.g. "√9.0 = 3.0"
+          exprDisplay.textContent = "√" + n + " = " + data.result;
         }
       } catch (e) {
         display.classList.add('error');
