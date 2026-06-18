@@ -39,6 +39,7 @@ public class CalculatorController {
     public CalculatorResponse square(@RequestBody SquareRequest req) {
         double n = req.getN();
         double result = n * n;
-        return new CalculatorResponse(result, "square", n + "²");
+        String expr = n + "²";
+        return new CalculatorResponse(result, "square", expr, n);
     }
 }
