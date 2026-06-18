@@ -120,6 +120,17 @@
       background: #ffd880;
       color: #3f0e40;
     }
+
+    /* --- FEEDBACK: Style for √ button (teal) --- */
+    .btn-sqrt {
+      background: #40c0c0;
+      color: #0a3f3f;
+      font-weight: 700;
+    }
+    .btn-sqrt:hover {
+      background: #5de0e0;
+      color: #0a3f3f;
+    }
   </style>
 </head>
 <body>
@@ -152,7 +163,7 @@
 
       <button class="btn-num" onclick="inputDigit('0')">0</button>
       <button class="btn-square" onclick="squareCurrent()">x²</button>
-      <button class="btn-square" onclick="sqrtCurrent()">√</button>
+      <button class="btn-sqrt" onclick="sqrtCurrent()">√</button>
       <button class="btn-equals" onclick="calculate()">=</button>
     </div>
   </div>
@@ -183,7 +194,10 @@
       updateDisplay(currentInput);
     }
 
-    // Removed inputPlusMinus()
+    function inputPlusMinus() {
+      currentInput = String(parseFloat(currentInput) * -1);
+      updateDisplay(currentInput);
+    }
 
     function setOp(op) {
       document.querySelectorAll('.btn-op').forEach(b => b.classList.remove('active-op'));
@@ -255,10 +269,10 @@
       justCalculated = true;
     }
 
-    // --- Square root function JS handler ---
+    // --- FEEDBACK: Sqrt function JS handler ---
     async function sqrtCurrent() {
       const n = parseFloat(currentInput);
-      exprDisplay.textContent = '√' + n + ' =';
+      exprDisplay.textContent = "√" + n + " =";
       try {
         const res = await fetch('/api/sqrt', {
           method: 'POST',
@@ -266,9 +280,9 @@
           body: JSON.stringify({ n })
         });
         const data = await res.json();
-        if (!res.ok || data.error) {
+        if (data.error) {
           display.classList.add('error');
-          display.textContent = data.error || 'Error';
+          display.textContent = data.error;
         } else {
           updateDisplay(data.result);
           currentInput = String(data.result);
