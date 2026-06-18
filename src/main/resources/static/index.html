@@ -106,7 +106,7 @@
     }
     .btn-clear:hover { background: rgba(255, 100, 100, 0.4); }
 
-    .btn-zero { grid-column: span 2; }
+    /* .btn-zero { grid-column: span 2; } -- removed as per instructions */
 
     .error { color: #ff9999 !important; font-size: 1rem !important; }
   </style>
@@ -139,7 +139,8 @@
       <button class="btn-num" onclick="inputDigit('3')">3</button>
       <button class="btn-op"  onclick="setOp('plus')">+</button>
 
-      <button class="btn-num btn-zero" onclick="inputDigit('0')">0</button>
+      <button class="btn-num" onclick="inputDigit('0')">0</button>
+      <button class="btn-op" onclick="squareCurrent()">x²</button>
       <button class="btn-num" onclick="inputPlusMinus()">+/−</button>
       <button class="btn-equals" onclick="calculate()">=</button>
     </div>
@@ -224,6 +225,25 @@
 
     function clearEntry() {
       currentInput = '0'; updateDisplay('0');
+    }
+
+    async function squareCurrent() {
+      const n = parseFloat(currentInput);
+      exprDisplay.textContent = n + '² =';
+      try {
+        const res = await fetch('/api/square', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ n })
+        });
+        const data = await res.json();
+        updateDisplay(data.result);
+        currentInput = String(data.result);
+      } catch (e) {
+        display.classList.add('error');
+        display.textContent = 'Error';
+      }
+      justCalculated = true;
     }
   </script>
 </body>

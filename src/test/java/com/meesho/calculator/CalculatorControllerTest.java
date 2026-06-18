@@ -63,4 +63,37 @@ class CalculatorControllerTest {
                 .content("{\"a\": 10, \"b\": 0}"))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    void squareOfFour() throws Exception {
+        mockMvc.perform(post("/api/square")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"n\": 4}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.result", is(16.0)))
+                .andExpect(jsonPath("$.operation", is("square")))
+                .andExpect(jsonPath("$.expression", is("4.0²")));
+    }
+
+    @Test
+    void squareOfZero() throws Exception {
+        mockMvc.perform(post("/api/square")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"n\": 0}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.result", is(0.0)))
+                .andExpect(jsonPath("$.operation", is("square")))
+                .andExpect(jsonPath("$.expression", is("0.0²")));
+    }
+
+    @Test
+    void squareOfNegativeThree() throws Exception {
+        mockMvc.perform(post("/api/square")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"n\": -3}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.result", is(9.0)))
+                .andExpect(jsonPath("$.operation", is("square")))
+                .andExpect(jsonPath("$.expression", is("-3.0²")));
+    }
 }
