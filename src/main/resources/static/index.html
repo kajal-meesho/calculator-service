@@ -131,6 +131,37 @@
       background: #5de0e0;
       color: #0a3f3f;
     }
+
+    /* --- Style for More Functions panel and buttons --- */
+    #more-panel {
+      display: none;
+      margin-top: 14px;
+      width: 100%;
+      background: rgba(64,192,192,0.15);
+      border-radius: 12px;
+      padding: 10px 0 4px 0;
+      box-shadow: 0 2px 8px rgba(64,192,192,0.08);
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .btn-more-fn {
+      background: #40c0c0;
+      color: #0a3f3f;
+      font-weight: 700;
+      width: 48%;
+      margin: 0 1%;
+      font-size: 1.1rem;
+      padding: 16px 0;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.15s;
+      display: inline-block;
+    }
+    .btn-more-fn:hover {
+      background: #5de0e0;
+      color: #0a3f3f;
+    }
   </style>
 </head>
 <body>
@@ -163,8 +194,12 @@
 
       <button class="btn-num" onclick="inputDigit('0')">0</button>
       <button class="btn-square" onclick="squareCurrent()">x²</button>
-      <button class="btn-sqrt" onclick="sqrtCurrent()">√</button>
+      <button class="btn-op" onclick="toggleMorePanel()" id="btn-more-fn">ƒ(x)</button>
       <button class="btn-equals" onclick="calculate()">=</button>
+    </div>
+    <div id="more-panel">
+      <button class="btn-more-fn" onclick="sinCurrent()">sin</button>
+      <button class="btn-more-fn" onclick="cosCurrent()">cos</button>
     </div>
   </div>
 
@@ -176,6 +211,8 @@
 
     const display = document.getElementById('result');
     const exprDisplay = document.getElementById('expression');
+    const morePanel = document.getElementById('more-panel');
+    const btnMoreFn = document.getElementById('btn-more-fn');
 
     function updateDisplay(val) {
       display.classList.remove('error');
@@ -191,11 +228,6 @@
     function inputDecimal() {
       if (justCalculated) { currentInput = '0.'; justCalculated = false; }
       else if (!currentInput.includes('.')) currentInput += '.';
-      updateDisplay(currentInput);
-    }
-
-    function inputPlusMinus() {
-      currentInput = String(parseFloat(currentInput) * -1);
       updateDisplay(currentInput);
     }
 
@@ -243,13 +275,14 @@
       firstNum = null; currentOp = null; currentInput = '0'; justCalculated = false;
       updateDisplay('0'); exprDisplay.textContent = '';
       document.querySelectorAll('.btn-op').forEach(b => b.classList.remove('active-op'));
+      if (morePanel) morePanel.style.display = 'none';
     }
 
     function clearEntry() {
       currentInput = '0'; updateDisplay('0');
     }
 
-    // --- FEEDBACK: Square function JS handler ---
+    // --- Square function JS handler ---
     async function squareCurrent() {
       const n = parseFloat(currentInput);
       exprDisplay.textContent = n + '² =';
@@ -262,7 +295,6 @@
         const data = await res.json();
         updateDisplay(data.result);
         currentInput = String(data.result);
-        // Show full equation after result
         exprDisplay.textContent = n + '² = ' + data.result;
       } catch (e) {
         display.classList.add('error');
@@ -271,7 +303,7 @@
       justCalculated = true;
     }
 
-    // --- FEEDBACK: Sqrt function JS handler ---
+    // --- Sqrt function JS handler ---
     async function sqrtCurrent() {
       const n = parseFloat(currentInput);
       exprDisplay.textContent = "√" + n + " =";
@@ -288,7 +320,6 @@
         } else {
           updateDisplay(data.result);
           currentInput = String(data.result);
-          // Show full equation after result, e.g. "√9.0 = 3.0"
           exprDisplay.textContent = "√" + n + " = " + data.result;
         }
       } catch (e) {
@@ -296,6 +327,59 @@
         display.textContent = 'Error';
       }
       justCalculated = true;
+    }
+
+    // --- More Functions panel toggle ---
+    function toggleMorePanel() {
+      if (morePanel.style.display === 'block') {
+        morePanel.style.display = 'none';
+      } else {
+        morePanel.style.display = 'block';
+      }
+    }
+
+    // --- Sin function JS handler ---
+    async function sinCurrent() {
+      const n = parseFloat(currentInput);
+      exprDisplay.textContent = "sin(" + n + "°) =";
+      try {
+        const res = await fetch('/api/sin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ n })
+        });
+        const data = await res.json();
+        updateDisplay(data.result);
+        currentInput = String(data.result);
+        exprDisplay.textContent = "sin(" + n + "°) = " + data.result;
+      } catch (e) {
+        display.classList.add('error');
+        display.textContent = 'Error';
+      }
+      justCalculated = true;
+      morePanel.style.display = 'none';
+    }
+
+    // --- Cos function JS handler ---
+    async function cosCurrent() {
+      const n = parseFloat(currentInput);
+      exprDisplay.textContent = "cos(" + n + "°) =";
+      try {
+        const res = await fetch('/api/cos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ n })
+        });
+        const data = await res.json();
+        updateDisplay(data.result);
+        currentInput = String(data.result);
+        exprDisplay.textContent = "cos(" + n + "°) = " + data.result;
+      } catch (e) {
+        display.classList.add('error');
+        display.textContent = 'Error';
+      }
+      justCalculated = true;
+      morePanel.style.display = 'none';
     }
   </script>
 </body>

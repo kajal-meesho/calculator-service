@@ -53,4 +53,22 @@ public class CalculatorController {
         String expr = "√" + n;
         return ResponseEntity.ok(new CalculatorResponse(result, "sqrt", expr, n));
     }
+
+    @PostMapping(value = "/sin", produces = MediaType.APPLICATION_JSON_VALUE)
+    public CalculatorResponse sin(@RequestBody SquareRequest req) {
+        double n = req.getN();
+        double radians = Math.toRadians(n);
+        double result = Math.sin(radians);
+        String expr = "sin(" + n + "°)";
+        return new CalculatorResponse(result, "sin", expr, n);
+    }
+
+    @PostMapping(value = "/cos", produces = MediaType.APPLICATION_JSON_VALUE)
+    public CalculatorResponse cos(@RequestBody SquareRequest req) {
+        double n = req.getN();
+        double radians = Math.toRadians(n);
+        double result = Math.cos(radians);
+        String expr = "cos(" + n + "°)";
+        return new CalculatorResponse(result, "cos", expr, n);
+    }
 }
