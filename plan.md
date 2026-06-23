@@ -1,49 +1,44 @@
-# KRD: SPSE-5858
+# KRD: DEMO-917
 
 ## Ticket
-- ID: SPSE-5858
-- Title: Add trigonometric functions (sin, cos) via a "More Functions" panel
+- ID: DEMO-917
+- Title: Redesign fx panel as full-screen toggle view with number pad and function buttons
 - Status: Open
 - Priority: Major
-- Description: Background
-The Meesho Calculator currently supports basic arithmetic and square. Users doing scientific calculations need sin and cos, but the 4-column button grid is full — there is no room to add more buttons directly. The solution is a "More ƒ" trigger button that opens an overlay panel containing the extra functions.
+- Description: Problem
+The current fx panel is small and cramped — adding more scientific functions to it is not feasible without breaking the layout.
+Proposed Design
+When the user clicks the fx button:
+The main calculator button grid (numbers + basic ops) hides
+A new fx panel slides in / replaces it, containing:
+A number pad (0–9, decimal, +/−)
+An equals button to trigger the function
+All scientific function buttons (sin, cos, sqrt, + any future additions) laid out in a clean grid
+An ← Back or fx toggle button returns to the standard calculator view
+This gives each scientific function a dedicated, uncluttered button without any overflow.
+UI Behaviour
+Toggle state is tracked with a JS boolean fxMode
+On enter fx mode: hide .buttons, show .fx-panel
+On exit fx mode: hide .fx-panel, show .buttons
+Number input and display (currentInput, result div) remain shared between both views
 Acceptance Criteria
-Backend
-POST /api/sin — accepts { "n": <number> }, treats n as degrees, returns { "result": <double>, "operation": "sin", "expression": "sin(n°)" }. Math.toRadians() must be used internally.
-POST /api/cos — same shape, computes cosine in degrees, expression "cos(n°)".
-Both endpoints return CalculatorResponse. Reuse the existing SquareRequest class (field n) — no new request class needed.
-CalculatorResponse constructor signature: (double result, String operation, String expression, double n) — use the 4-arg version (same as square())
-Unit tests in CalculatorControllerTest: at least 4 tests total — sin(0°)=0, sin(90°)=1, cos(0°)=1, cos(90°)≈0 (use assertEquals(expected, actual, 1e-9) delta).
-Frontend (index.html)
-Replace the +/− button in the last row with a "ƒ(x)" button styled like .btn-op (purple tint).
-Add a hidden panel (id="more-panel") below the .buttons grid, initially display:none. It contains two buttons side by side: sin and cos, each spanning half the panel width.
-Clicking ƒ(x) toggles the panel visible/hidden (no page scroll, no new page).
-sin button: calls POST /api/sin with { "n": parseFloat(currentInput) }, updates expression line to sin(<n>°) = and result display to the returned value.
-cos button: same pattern for cosine.
-Panel buttons should use a distinct style — suggest teal (#40c0c0 background, #0a3f3f text) to visually separate them from the main grid.
-After a sin/cos call, currentInput is updated to the result string and justCalculated = true (same post-calc convention as squareCurrent()).
-Out of Scope
-tan, asin, acos, radians mode toggle — future ticket
-Mobile keyboard / accessibility — future ticket
-Notes for Implementer
-Keep changes to two files only: CalculatorController.java and index.html
-The SquareRequest class already exists at src/main/java/com/meesho/calculator/SquareRequest.java — use it as-is
-CalculatorResponse constructor signature: (double result, String operation, String expression, double n) — use the 4-arg version (same as square())
-Angle mode is degrees (standard calculator UX); conversion: Math.sin(Math.toRadians(n))
+[ ] Clicking fx hides the standard button grid and shows the fx panel
+[ ] fx panel contains a number pad (0–9, ., +/−), an = / apply button, and all scientific function buttons
+[ ] A back/close button returns to the standard view
+[ ] Adding a new function button requires only adding one button element to the fx panel — no layout changes needed
+[ ] No overflow or wrapping issues at the standard 320px calculator width
 
 ## Goal
-Add sin and cos trigonometric functions to the calculator, accessible via a "More Functions" overlay panel, with backend endpoints and frontend integration.
-- Incorporate feedback to move the √ button into the More panel and put ƒ(x) in its place in the main grid for better layout consistency.
+Redesign the fx panel as a full-screen toggle view with a number pad, equals/apply button, and all scientific function buttons (sin, cos, sqrt, etc.), with a back button to return to the standard calculator view. Adding new functions should require only a new button in the fx panel.
 
 ## Decisions made
-- Use POST /api/sin and /api/cos, both accepting { n: <number> } (degrees), using SquareRequest.
-- Both endpoints return CalculatorResponse using the 4-arg constructor.
-- Expression format: "sin(n°)" and "cos(n°)".
-- Add "ƒ(x)" button (styled .btn-op) in place of +/−, which toggles a hidden panel with sin/cos buttons.
-- Panel buttons styled teal (#40c0c0 background, #0a3f3f text).
-- After sin/cos, update currentInput and justCalculated as with squareCurrent().
-- At least 4 unit tests: sin(0)=0, sin(90)=1, cos(0)=1, cos(90)=0 (with delta).
-- Move √ button into More panel, and put ƒ(x) in its place in the main grid as per feedback.
+- The fx panel replaces the main button grid when toggled.
+- The fx panel contains a number pad (0–9, ., +/−), an equals/apply button, and all scientific function buttons in a clean grid.
+- A back button returns to the standard calculator view.
+- Adding a new function button only requires adding a button element to the fx panel.
+- No overflow or wrapping at 320px width.
+- Toggle state is tracked with a JS boolean fxMode.
+- Number input and display remain shared between both views.
 
 ## Open doubts
 _(none)_
@@ -53,39 +48,20 @@ _(none)_
 
 ## State
 - state: TESTS_RUNNING
-- prNumber: 3
-- prUrl: https://github.com/kajal-meesho/calculator-service/pull/3
-- branch: feature/spse-5858-ai-summary
 - targetRepo: https://github.com/kajal-meesho/calculator-service
 - channelId: C0B5ZQF12Q2
-- threadTs: 1781969867.491409
+- threadTs: 1782206008.296279
 - userId: U0B42FAHQ6L
-- lastCommentSeen: 2026-06-20T15:49:41Z
+- batchTotal: 1
 - testStatus: PASS
-- testReportSummary: 12/12 tests passed in 6s
-- feedbackQueueJson: W3sic291cmNlIjoiR2l0SHViIiwiZ2hDb21tZW50SWQiOjQ3NTg4NDEzOTgsImdoVXNlckxvZ2luIjoia2FqYWwtbWVlc2hvIiwiYm9keSI6IioqTGF5b3V0IGZpeDogbW92ZSDiiJogaW50byBNb3JlIHBhbmVsLCBwdXQgxpIoeCkgaW4gaXRzIHBsYWNlKipcclxuXHJcbioqUHJvYmxlbToqKlxyXG5UaGUgbGFzdCByb3cgY3VycmVudGx5IGhhcyA1IGJ1dHRvbnMgKDAsIHjCsiwg4oiaLCDGkih4KSwgPSkgYnV0IHRoZSBncmlkIGlzXHJcbmBncmlkLXRlbXBsYXRlLWNvbHVtbnM6IHJlcGVhdCg0LCAxZnIpYCDigJQgdGhlID0gYnV0dG9uIHdyYXBzIHRvIGEgbmV3IHJvd1xyXG5hbmQgYXBwZWFycyBhbG9uZS4gQ2FsY3VsYXRvciBsb29rcyBicm9rZW4uXHJcblxyXG4qKldoYXQgdG8gY2hhbmdlIGluIGluZGV4Lmh0bWw6KipcclxuXHJcbjEuIFJlbW92ZSB0aGUg4oiaIGJ1dHRvbiBmcm9tIHRoZSBtYWluIGdyaWQgbGFzdCByb3cuXHJcbiAgIEJlZm9yZTogYDAgfCB4wrIgfCDiiJogfCDGkih4KSB8ID1gXHJcbiAgIEFmdGVyOiAgYDAgfCB4wrIgfCDGkih4KSB8ID1gXHJcblxyXG4yLiBBZGQgYSDiiJogYnV0dG9uIGluc2lkZSBgI21vcmUtcGFuZWxgIGFsb25nc2lkZSB0aGUgZXhpc3Rpbmcgc2luIGFuZCBjb3MgYnV0dG9ucy5cclxuICAgVGhlIG1vcmUtcGFuZWwgc2hvdWxkIG5vdyBoYXZlIDMgYnV0dG9uczogc2luLCBjb3MsIOKImlxyXG4gICBvbkNsaWNrIGZvciDiiJo6IGNhbGwgdGhlIGV4aXN0aW5nIGBzcXJ0Q3VycmVudCgpYCBmdW5jdGlvbi5cclxuXHJcbioqTm8gYmFja2VuZCBjaGFuZ2VzIG5lZWRlZC4qKiBPbmx5IGluZGV4Lmh0bWwgY2hhbmdlcy4iLCJza2lwUmVhc29uIjpudWxsLCJza2lwcGVkQXQiOm51bGx9XQ==
-- activeFeedbackIndex: 0
-- feedbackImplPanelTs: 1781970870.136099
-- feedbackActivePlanText: Plan to move √ button to More panel and put ƒ(x) in its place in the main grid\n\n- File: src/main/resources/static/index.html\n  - In the main calculator grid:\n    - Remove the √ button from the last row of the `.buttons` grid.\n    - Move the ƒ(x) button (which toggles the More panel) into the last row, in the position previously occupied by √.\n    - The last row should now be: 0 | x² | ƒ(x) | =\n  - In the More panel (`#more-panel`):\n    - Add a √ button alongside the existing sin and cos buttons, so the panel has three buttons: sin, cos, √.\n    - Set the √ button's onClick to call `sqrtCurrent()`.\n    - Style the √ button in the More panel using the same .btn-sqrt (teal) class for consistency.\n  - Ensure there are no backend changes; only update the HTML and JavaScript as needed for the UI.
-- feedbackActiveImplText: Move √ button into More panel, put ƒ(x) in main grid; update layout as per feedback\n\nFILENAME: src/main/resources/static/index.html\n```html\n<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8" />\n  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>\n  <title>Meesho Calculator</title>\n  <style>\n    * { box-sizing: border-box; margin: 0; padding: 0; }\n\n    body {\n      min-height: 100vh;\n      display: flex;\n      flex-direction: column;\n      align-items: center;\n      justify-content: center;\n      background: linear-gradient(135deg, #3f0e40 0%, #831a85 50%, #b44eb6 100%);\n      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n    }\n\n    h1 {\n      color: #fff;\n      font-size: 1.4rem;\n      margin-bottom: 24px;\n      letter-spacing: 2px;\n      text-transform: uppercase;\n      opacity: 0.9;\n    }\n\n    .calculator {\n      background: rgba(255, 255, 255, 0.08);\n      backdrop-filter: blur(12px);\n      border: 1px solid rgba(255, 255, 255, 0.2);\n      border-radius: 24px;\n      padding: 28px;\n      width: 320px;\n      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);\n    }\n\n    .display {\n      background: rgba(0, 0, 0, 0.35);\n      border-radius: 14px;\n      padding: 16px 20px;\n      margin-bottom: 20px;\n      text-align: right;\n      min-height: 80px;\n      display: flex;\n      flex-direction: column;\n      justify-content: flex-end;\n    }\n\n    .display .expression {\n      font-size: 0.85rem;\n      color: rgba(255, 255, 255, 0.5);\n      min-height: 20px;\n      margin-bottom: 4px;\n    }\n\n    .display .result {\n      font-size: 2.2rem;\n      font-weight: 300;\n      color: #fff;\n      word-break: break-all;\n    }\n\n    .buttons {\n      display: grid;\n      grid-template-columns: repeat(4, 1fr);\n      gap: 10px;\n    }\n\n    button {\n      padding: 18px 0;\n      border: none;\n      border-radius: 12px;\n      font-size: 1.1rem;\n      cursor: pointer;\n      transition: all 0.15s ease;\n      font-weight: 500;\n    }\n\n    button:active { transform: scale(0.94); }\n\n    .btn-num {\n      background: rgba(255, 255, 255, 0.15);\n      color: #fff;\n    }\n    .btn-num:hover { background: rgba(255, 255, 255, 0.25); }\n\n    .btn-op {\n      background: rgba(234, 189, 251, 0.25);\n      color: #eabdfb;\n    }\n    .btn-op:hover { background: rgba(234, 189, 251, 0.4); }\n    .btn-op.active-op { background: #eabdfb; color: #3f0e40; }\n\n    .btn-equals {\n      background: #eabdfb;\n      color: #3f0e40;\n      font-size: 1.3rem;\n    }\n    .btn-equals:hover { background: #f5d6ff; }\n\n    .btn-clear {\n      background: rgba(255, 100, 100, 0.25);\n      color: #ff9999;\n    }\n    .btn-clear:hover { background: rgba(255, 100, 100, 0.4); }\n\n    /* Removed .btn-zero rule */\n\n    .error { color: #ff9999 !important; font-size: 1rem !important; }\n\n    /* --- FEEDBACK: Style for x² button --- */\n    .btn-square {\n      background: #f0c040;\n      color: #3f0e40;\n      font-weight: 700;\n    }\n    .btn-square:hover {\n      background: #ffd880;\n      color: #3f0e40;\n    }\n\n    /* --- FEEDBACK: Style for √ button (teal) --- */\n    .btn-sqrt {\n      background: #40c0c0;\n      color: #0a3f3f;\n      font-weight: 700;\n    }\n    .btn-sqrt:hover {\n      background: #5de0e0;\n      color: #0a3f3f;\n    }\n\n    /* --- More panel styles --- */\n    #more-panel {\n      display: none;\n      margin-top: 16px;\n      background: rgba(255,255,255,0.12);\n      border-radius: 14px;\n      padding: 12px 10px 10px 10px;\n      box-shadow: 0 2px 12px rgba(0,0,0,0.12);\n      width: 100%;\n      max-width: 320px;\n      text-align: center;\n    }\n    .more-btn-row {\n      display: flex;\n      gap: 10px;\n      justify-content: center;\n    }\n    .btn-more-func {\n      flex: 1 1 0;\n      background: #40c0c0;\n      color: #0a3f3f;\n      font-weight: 700;\n      border-radius: 10px;\n      padding: 16px 0;\n      font-size: 1.1rem;\n      margin: 0;\n      border: none;\n      transition: all 0.15s;\n      cursor: pointer;\n    }\n    .btn-more-func:hover {\n      background: #5de0e0;\n      color: #0a3f3f;\n    }\n  </style>\n</head>\n<body>\n  <h1>Meesho Calculator</h1>\n  <div class="calculator">\n    <div class="display">\n      <div class="expression" id="expression"></div>\n      <div class="result" id="result">0</div>\n    </div>\n    <div class="buttons">\n      <button class="btn-clear" onclick="clearAll()">AC</button>\n      <button class="btn-clear" onclick="clearEntry()">CE</button>\n      <button class="btn-num"   onclick="inputDecimal()">.</button>\n      <button class="btn-op"    onclick="setOp('divide')">÷</button>\n\n      <button class="btn-num" onclick="inputDigit('7')">7</button>\n      <button class="btn-num" onclick="inputDigit('8')">8</button>\n      <button class="btn-num" onclick="inputDigit('9')">9</button>\n      <button class="btn-op"  onclick="setOp('multiply')">×</button>\n\n      <button class="btn-num" onclick="inputDigit('4')">4</button>\n      <button class="btn-num" onclick="inputDigit('5')">5</button>\n      <button class="btn-num" onclick="inputDigit('6')">6</button>\n      <button class="btn-op"  onclick="setOp('minus')">−</button>\n\n      <button class="btn-num" onclick="inputDigit('1')">1</button>\n      <button class="btn-num" onclick="inputDigit('2')">2</button>\n      <button class="btn-num" onclick="inputDigit('3')">3</button>\n      <button class="btn-op"  onclick="setOp('plus')">+</button>\n\n      <button class="btn-num" onclick="inputDigit('0')">0</button>\n      <button class="btn-square" onclick="squareCurrent()">x²</button>\n      <button class="btn-op" onclick="toggleMorePanel()">ƒ(x)</button>\n      <button class="btn-equals" onclick="calculate()">=</button>\n    </div>\n    <div id="more-panel">\n      <div class="more-btn-row">\n        <button class="btn-more-func" onclick="sinCurrent()">sin</button>\n        <button class="btn-more-func" onclick="cosCurrent()">cos</button>\n        <button class="btn-sqrt" onclick="sqrtCurrent()">√</button>\n      </div>\n    </div>\n  </div>\n\n  <script>\n    let firstNum = null;\n    let currentOp = null;\n    let currentInput = '0';\n    let justCalculated = false;\n\n    const display = document.getElementById('result');\n    const exprDisplay = document.getElementById('expression');\n    const morePanel = document.getElementById('more-panel');\n\n    function updateDisplay(val) {\n      display.classList.remove('error');\n      display.textContent = val;\n    }\n\n    function inputDigit(d) {\n      if (justCalculated) { currentInput = d; justCalculated = false; }\n      else currentInput = currentInput === '0' ? d : currentInput + d;\n      updateDisplay(currentInput);\n    }\n\n    function inputDecimal() {\n      if (justCalculated) { currentInput = '0.'; justCalculated = false; }\n      else if (!currentInput.includes('.')) currentInput += '.';\n      updateDisplay(currentInput);\n    }\n\n    function inputPlusMinus() {\n      currentInput = String(parseFloat(currentInput) * -1);\n      updateDisplay(currentInput);\n    }\n\n    function setOp(op) {\n      document.querySelectorAll('.btn-op').forEach(b => b.classList.remove('active-op'));\n      event.target.classList.add('active-op');\n      firstNum = parseFloat(currentInput);\n      currentOp = op;\n      justCalculated = false;\n      exprDisplay.textContent = firstNum + ' ' + opSymbol(op);\n      currentInput = '0';\n    }\n\n    function opSymbol(op) {\n      return { plus: '+', minus: '−', multiply: '×', divide: '÷' }[op] || op;\n    }\n\n    async function calculate() {\n      if (firstNum === null || currentOp === null) return;\n      const b = parseFloat(currentInput);\n      exprDisplay.textContent = firstNum + ' ' + opSymbol(currentOp) + ' ' + b + ' =';\n      try {\n        const res = await fetch('/api/' + currentOp, {\n          method: 'POST',\n          headers: { 'Content-Type': 'application/json' },\n          body: JSON.stringify({ a: firstNum, b })\n        });\n        const data = await res.json();\n        if (data.error) {\n          display.classList.add('error');\n          display.textContent = data.error;\n        } else {\n          updateDisplay(data.result);\n          currentInput = String(data.result);\n        }\n      } catch (e) {\n        display.classList.add('error');\n        display.textContent = 'Error';\n      }\n      document.querySelectorAll('.btn-op').forEach(b => b.classList.remove('active-op'));\n      firstNum = null; currentOp = null; justCalculated = true;\n    }\n\n    function clearAll() {\n      firstNum = null; currentOp = null; currentInput = '0'; justCalculated = false;\n      updateDisplay('0'); exprDisplay.textContent = '';\n      document.querySelectorAll('.btn-op').forEach(b => b.classList.remove('active-op'));\n      hideMorePanel();\n    }\n\n    function clearEntry() {\n      currentInput = '0'; updateDisplay('0');\n    }\n\n    // --- FEEDBACK: Square function JS handler ---\n    async function squareCurrent() {\n      const n = parseFloat(currentInput);\n      exprDisplay.textContent = n + '² =';\n      try {\n        const res = await fetch('/api/square', {\n          method: 'POST',\n          headers: { 'Content-Type': 'application/json' },\n          body: JSON.stringify({ n })\n        });\n        const data = await res.json();\n        updateDisplay(data.result);\n        currentInput = String(data.result);\n        // Show full equation after result\n        exprDisplay.textContent = n + '² = ' + data.result;\n      } catch (e) {\n        display.classList.add('error');\n        display.textContent = 'Error';\n      }\n      justCalculated = true;\n    }\n\n    // --- FEEDBACK: Sqrt function JS handler ---\n    async function sqrtCurrent() {\n      const n = parseFloat(currentInput);\n      exprDisplay.textContent = "√" + n + " =";\n      try {\n        const res = await fetch('/api/sqrt', {\n          method: 'POST',\n          headers: { 'Content-Type': 'application/json' },\n          body: JSON.stringify({ n })\n        });\n        const data = await res.json();\n        if (data.error) {\n          display.classList.add('error');\n          display.textContent = data.error;\n        } else {\n          updateDisplay(data.result);\n          currentInput = String(data.result);\n          // Show full equation after result, e.g. "√9.0 = 3.0"\n          exprDisplay.textContent = "√" + n + " = " + data.result;\n        }\n      } catch (e) {\n        display.classList.add('error');\n        display.textContent = 'Error';\n      }\n      justCalculated = true;\n      hideMorePanel();\n    }\n\n    // --- More panel toggle logic ---\n    function toggleMorePanel() {\n      if (morePanel.style.display === 'block') {\n        morePanel.style.display = 'none';\n      } else {\n        morePanel.style.display = 'block';\n      }\n    }\n    function hideMorePanel() {\n      morePanel.style.display = 'none';\n    }\n\n    // --- Sin and Cos handlers for More panel ---\n    async function sinCurrent() {\n      const n = parseFloat(currentInput);\n      exprDisplay.textContent = "sin(" + n + "°) =";\n      try {\n        const res = await fetch('/api/sin', {\n          method: 'POST',\n          headers: { 'Content-Type': 'application/json' },\n          body: JSON.stringify({ n })\n        });\n        const data = await res.json();\n        updateDisplay(data.result);\n        currentInput = String(data.result);\n        exprDisplay.textContent = "sin(" + n + "°) = " + data.result;\n      } catch (e) {\n        display.classList.add('error');\n        display.textContent = 'Error';\n      }\n      justCalculated = true;\n      hideMorePanel();\n    }\n\n    async function cosCurrent() {\n      const n = parseFloat(currentInput);\n      exprDisplay.textContent = "cos(" + n + "°) =";\n      try {\n        const res = await fetch('/api/cos', {\n          method: 'POST',\n          headers: { 'Content-Type': 'application/json' },\n          body: JSON.stringify({ n })\n        });\n        const data = await res.json();\n        updateDisplay(data.result);\n        currentInput = String(data.result);\n        exprDisplay.textContent = "cos(" + n + "°) = " + data.result;\n      } catch (e) {\n        display.classList.add('error');\n        display.textContent = 'Error';\n      }\n      justCalculated = true;\n      hideMorePanel();\n    }\n  </script>\n</body>\n</html>\n```
+- testReportSummary: 12/12 tests passed in 8s
 
 ## History
-- 2026-06-20T15:37:50Z — Mapped repo for SPSE-5858: https://github.com/kajal-meesho/calculator-service
-- 2026-06-20T15:37:57Z — <@U0B42FAHQ6L>: /kevin SPSE-5858
-- 2026-06-20 — AI implemented /api/sin and /api/cos endpoints, More Functions panel, and frontend integration; emitting READY.
-- 2026-06-20T15:38:43Z — Kevin: ## READY: Adds /api/sin and /api/cos endpoints, "ƒ(x)" button, and More Functions panel with sin/cos UI
-- 2026-06-20T15:38:43Z — AI emitted READY; transitioning to plan review.
-- 2026-06-20T15:38:56Z — <@U0B42FAHQ6L> approved the plan; moving to implementation review.
-- 2026-06-20T15:39:53Z — Kevin: placeholder retry — regenerated 2 file(s)
-- 2026-06-20T15:40:05Z — <@U0B42FAHQ6L> approved implementation; running test gate.
-- 2026-06-20T15:40:29Z — PR opened at https://github.com/kajal-meesho/calculator-service/pull/3
-- 2026-06-20T15:50:40Z — <@U0B42FAHQ6L> started interactive feedback loop: 1 item(s)
-- 2026-06-20T15:52:00Z — Kevin: feedback plan: Move √ button to More panel, put ƒ(x) in its place in the main grid (layout fix)
-- 2026-06-20T15:51:03Z — Kevin: feedback plan 1/1: Plan to move √ button to More panel and put ƒ(x) in its place in the main grid
-- File: src/main/resources/static/index.html
-- In the main calculator grid:
-- Remove the √ button from the last ro…
-- 2026-06-20T15:53:12Z — <@U0B42FAHQ6L> approved feedback plan 1
-- 2026-06-20 — AI implemented feedback: Move √ button to More panel, put ƒ(x) in its place in the main grid; emitting READY.
-- 2026-06-20T15:54:26Z — Kevin: feedback impl 1/1: Move √ button into More panel, put ƒ(x) in main grid; update layout as per feedback
-- 2026-06-20T15:55:54Z — <@U0B42FAHQ6L> approved feedback impl 1
+- 2026-06-23T09:13:31Z — Mapped repo for DEMO-917: https://github.com/kajal-meesho/calculator-service
+- 2026-06-23T09:13:38Z — <@U0B42FAHQ6L>: /kevin DEMO-917
+- 2026-06-23 — AI implemented fx panel redesign as full-screen toggle view with number pad and function buttons; emitting READY.
+- 2026-06-23T09:14:18Z — Kevin: ## READY: Redesigned fx panel as full-screen toggle view with number pad and function buttons
+- 2026-06-23T09:14:18Z — AI emitted READY; transitioning to plan review.
+- 2026-06-23T09:15:10Z — <@U0B42FAHQ6L> approved the plan; moving to implementation review.
+- 2026-06-23T09:16:07Z — Kevin: placeholder retry — regenerated 1 file(s)
+- 2026-06-23T09:16:48Z — <@U0B42FAHQ6L> approved implementation; running test gate.
