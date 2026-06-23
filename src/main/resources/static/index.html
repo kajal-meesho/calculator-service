@@ -106,8 +106,6 @@
     }
     .btn-clear:hover { background: rgba(255, 100, 100, 0.4); }
 
-    /* Removed .btn-zero rule */
-
     .error { color: #ff9999 !important; font-size: 1rem !important; }
 
     /* --- FEEDBACK: Style for x² button --- */
@@ -132,39 +130,133 @@
       color: #0a3f3f;
     }
 
-    /* --- More panel styles --- */
-    #more-panel {
+    /* --- FX Panel styles --- */
+    .fx-panel {
       display: none;
-      margin-top: 16px;
-      background: rgba(255,255,255,0.12);
-      border-radius: 14px;
-      padding: 12px 10px 10px 10px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 0;
       width: 100%;
       max-width: 320px;
-      text-align: center;
+      background: rgba(255,255,255,0.12);
+      border-radius: 14px;
+      padding: 16px 10px 18px 10px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+      position: relative;
+      z-index: 2;
+      min-height: 340px;
     }
-    .more-btn-row {
+    .fx-panel .fx-back-row {
+      display: flex;
+      justify-content: flex-start;
+      margin-bottom: 8px;
+    }
+    .fx-panel .btn-fx-back {
+      background: rgba(234, 189, 251, 0.25);
+      color: #eabdfb;
+      border-radius: 10px;
+      padding: 10px 18px;
+      font-size: 1.1rem;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .fx-panel .btn-fx-back:hover {
+      background: #eabdfb;
+      color: #3f0e40;
+    }
+    .fx-panel .fx-num-pad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .fx-panel .fx-num-btn {
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      font-size: 1.2rem;
+      font-weight: 500;
+      border-radius: 10px;
+      padding: 18px 0;
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .fx-panel .fx-num-btn:hover {
+      background: rgba(255,255,255,0.25);
+      color: #fff;
+    }
+    .fx-panel .fx-num-btn.fx-plusminus {
+      background: #f0c040;
+      color: #3f0e40;
+      font-weight: 700;
+    }
+    .fx-panel .fx-num-btn.fx-plusminus:hover {
+      background: #ffd880;
+      color: #3f0e40;
+    }
+    .fx-panel .fx-num-btn.fx-decimal {
+      background: rgba(255,255,255,0.20);
+      color: #fff;
+    }
+    .fx-panel .fx-num-btn.fx-decimal:hover {
+      background: rgba(255,255,255,0.35);
+      color: #fff;
+    }
+    .fx-panel .fx-apply-row {
       display: flex;
       gap: 10px;
-      justify-content: center;
+      margin-bottom: 10px;
     }
-    .btn-more-func {
+    .fx-panel .btn-fx-apply {
       flex: 1 1 0;
+      background: #eabdfb;
+      color: #3f0e40;
+      font-size: 1.2rem;
+      font-weight: 700;
+      border-radius: 10px;
+      padding: 16px 0;
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .fx-panel .btn-fx-apply:hover {
+      background: #f5d6ff;
+      color: #3f0e40;
+    }
+    .fx-panel .fx-func-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .fx-panel .fx-func-btn {
       background: #40c0c0;
       color: #0a3f3f;
       font-weight: 700;
       border-radius: 10px;
       padding: 16px 0;
       font-size: 1.1rem;
-      margin: 0;
       border: none;
       transition: all 0.15s;
       cursor: pointer;
     }
-    .btn-more-func:hover {
+    .fx-panel .fx-func-btn:hover {
       background: #5de0e0;
       color: #0a3f3f;
+    }
+    .fx-panel .fx-func-btn.fx-sqrt {
+      background: #40c0c0;
+      color: #0a3f3f;
+    }
+    .fx-panel .fx-func-btn.fx-square {
+      background: #f0c040;
+      color: #3f0e40;
+    }
+    .fx-panel .fx-func-btn.fx-square:hover {
+      background: #ffd880;
+      color: #3f0e40;
     }
   </style>
 </head>
@@ -198,14 +290,35 @@
 
       <button class="btn-num" onclick="inputDigit('0')">0</button>
       <button class="btn-square" onclick="squareCurrent()">x²</button>
-      <button class="btn-op" onclick="toggleMorePanel()">ƒ(x)</button>
+      <button class="btn-op" onclick="toggleFxPanel()">ƒ(x)</button>
       <button class="btn-equals" onclick="calculate()">=</button>
     </div>
-    <div id="more-panel">
-      <div class="more-btn-row">
-        <button class="btn-more-func" onclick="sinCurrent()">sin</button>
-        <button class="btn-more-func" onclick="cosCurrent()">cos</button>
-        <button class="btn-sqrt" onclick="sqrtCurrent()">√</button>
+    <div class="fx-panel" id="fx-panel">
+      <div class="fx-back-row">
+        <button class="btn-fx-back" onclick="toggleFxPanel()">← Back</button>
+      </div>
+      <div class="fx-num-pad">
+        <button class="fx-num-btn" onclick="fxInputDigit('7')">7</button>
+        <button class="fx-num-btn" onclick="fxInputDigit('8')">8</button>
+        <button class="fx-num-btn" onclick="fxInputDigit('9')">9</button>
+        <button class="fx-num-btn" onclick="fxInputDigit('4')">4</button>
+        <button class="fx-num-btn" onclick="fxInputDigit('5')">5</button>
+        <button class="fx-num-btn" onclick="fxInputDigit('6')">6</button>
+        <button class="fx-num-btn" onclick="fxInputDigit('1')">1</button>
+        <button class="fx-num-btn" onclick="fxInputDigit('2')">2</button>
+        <button class="fx-num-btn" onclick="fxInputDigit('3')">3</button>
+        <button class="fx-num-btn fx-plusminus" onclick="fxInputPlusMinus()">+/−</button>
+        <button class="fx-num-btn" onclick="fxInputDigit('0')">0</button>
+        <button class="fx-num-btn fx-decimal" onclick="fxInputDecimal()">.</button>
+      </div>
+      <div class="fx-apply-row">
+        <button class="btn-fx-apply" onclick="fxApply()">=</button>
+      </div>
+      <div class="fx-func-grid">
+        <button class="fx-func-btn" onclick="fxSin()">sin</button>
+        <button class="fx-func-btn" onclick="fxCos()">cos</button>
+        <button class="fx-func-btn fx-sqrt" onclick="fxSqrt()">√</button>
+        <button class="fx-func-btn fx-square" onclick="fxSquare()">x²</button>
       </div>
     </div>
   </div>
@@ -215,10 +328,13 @@
     let currentOp = null;
     let currentInput = '0';
     let justCalculated = false;
+    let fxMode = false;
+    let fxInput = '0';
+    let fxPendingFunc = null; // e.g. 'sin', 'cos', 'sqrt', 'square'
 
     const display = document.getElementById('result');
     const exprDisplay = document.getElementById('expression');
-    const morePanel = document.getElementById('more-panel');
+    const fxPanel = document.getElementById('fx-panel');
 
     function updateDisplay(val) {
       display.classList.remove('error');
@@ -286,7 +402,7 @@
       firstNum = null; currentOp = null; currentInput = '0'; justCalculated = false;
       updateDisplay('0'); exprDisplay.textContent = '';
       document.querySelectorAll('.btn-op').forEach(b => b.classList.remove('active-op'));
-      hideMorePanel();
+      hideFxPanel();
     }
 
     function clearEntry() {
@@ -306,7 +422,6 @@
         const data = await res.json();
         updateDisplay(data.result);
         currentInput = String(data.result);
-        // Show full equation after result
         exprDisplay.textContent = n + '² = ' + data.result;
       } catch (e) {
         display.classList.add('error');
@@ -332,7 +447,6 @@
         } else {
           updateDisplay(data.result);
           currentInput = String(data.result);
-          // Show full equation after result, e.g. "√9.0 = 3.0"
           exprDisplay.textContent = "√" + n + " = " + data.result;
         }
       } catch (e) {
@@ -340,19 +454,6 @@
         display.textContent = 'Error';
       }
       justCalculated = true;
-      hideMorePanel();
-    }
-
-    // --- More panel toggle logic ---
-    function toggleMorePanel() {
-      if (morePanel.style.display === 'block') {
-        morePanel.style.display = 'none';
-      } else {
-        morePanel.style.display = 'block';
-      }
-    }
-    function hideMorePanel() {
-      morePanel.style.display = 'none';
     }
 
     // --- Sin and Cos handlers for More panel ---
@@ -374,7 +475,6 @@
         display.textContent = 'Error';
       }
       justCalculated = true;
-      hideMorePanel();
     }
 
     async function cosCurrent() {
@@ -395,7 +495,175 @@
         display.textContent = 'Error';
       }
       justCalculated = true;
-      hideMorePanel();
+    }
+
+    // --- FX Panel logic ---
+    function toggleFxPanel() {
+      fxMode = !fxMode;
+      const buttons = document.querySelector('.buttons');
+      if (fxMode) {
+        buttons.style.display = 'none';
+        fxPanel.style.display = 'flex';
+        fxInput = currentInput;
+        fxPendingFunc = null;
+        updateFxNumPadDisplay();
+      } else {
+        buttons.style.display = 'grid';
+        fxPanel.style.display = 'none';
+        // When leaving fx mode, update main input to fxInput if a function was applied
+        if (fxPendingFunc === null) {
+          // If user just hit back, keep currentInput as is
+        } else {
+          currentInput = fxInput;
+          updateDisplay(currentInput);
+        }
+        fxPendingFunc = null;
+      }
+    }
+    function hideFxPanel() {
+      fxMode = false;
+      document.querySelector('.buttons').style.display = 'grid';
+      fxPanel.style.display = 'none';
+    }
+
+    function updateFxNumPadDisplay() {
+      // Optionally highlight or update the display if needed
+      // For now, nothing needed as display/result is shared
+      updateDisplay(fxInput);
+    }
+
+    function fxInputDigit(d) {
+      if (fxPendingFunc !== null) { fxInput = d; fxPendingFunc = null; }
+      else if (fxInput === '0') fxInput = d;
+      else fxInput += d;
+      updateFxNumPadDisplay();
+    }
+
+    function fxInputDecimal() {
+      if (fxPendingFunc !== null) { fxInput = '0.'; fxPendingFunc = null; }
+      else if (!fxInput.includes('.')) fxInput += '.';
+      updateFxNumPadDisplay();
+    }
+
+    function fxInputPlusMinus() {
+      fxInput = String(parseFloat(fxInput) * -1);
+      updateFxNumPadDisplay();
+    }
+
+    function fxApply() {
+      // If a function was selected, apply it; else, just update main input
+      if (fxPendingFunc === null) {
+        // No function selected, just update main input
+        currentInput = fxInput;
+        updateDisplay(currentInput);
+        exprDisplay.textContent = '';
+        fxMode = false;
+        document.querySelector('.buttons').style.display = 'grid';
+        fxPanel.style.display = 'none';
+      } else {
+        // Apply the pending function
+        if (fxPendingFunc === 'sin') fxSin();
+        else if (fxPendingFunc === 'cos') fxCos();
+        else if (fxPendingFunc === 'sqrt') fxSqrt();
+        else if (fxPendingFunc === 'square') fxSquare();
+      }
+    }
+
+    function fxSetPendingFunc(func) {
+      fxPendingFunc = func;
+    }
+
+    async function fxSin() {
+      const n = parseFloat(fxInput);
+      exprDisplay.textContent = "sin(" + n + "°) =";
+      try {
+        const res = await fetch('/api/sin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ n })
+        });
+        const data = await res.json();
+        updateDisplay(data.result);
+        fxInput = String(data.result);
+        exprDisplay.textContent = "sin(" + n + "°) = " + data.result;
+        currentInput = fxInput;
+      } catch (e) {
+        display.classList.add('error');
+        display.textContent = 'Error';
+      }
+      justCalculated = true;
+      fxPendingFunc = null;
+    }
+
+    async function fxCos() {
+      const n = parseFloat(fxInput);
+      exprDisplay.textContent = "cos(" + n + "°) =";
+      try {
+        const res = await fetch('/api/cos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ n })
+        });
+        const data = await res.json();
+        updateDisplay(data.result);
+        fxInput = String(data.result);
+        exprDisplay.textContent = "cos(" + n + "°) = " + data.result;
+        currentInput = fxInput;
+      } catch (e) {
+        display.classList.add('error');
+        display.textContent = 'Error';
+      }
+      justCalculated = true;
+      fxPendingFunc = null;
+    }
+
+    async function fxSqrt() {
+      const n = parseFloat(fxInput);
+      exprDisplay.textContent = "√" + n + " =";
+      try {
+        const res = await fetch('/api/sqrt', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ n })
+        });
+        const data = await res.json();
+        if (data.error) {
+          display.classList.add('error');
+          display.textContent = data.error;
+        } else {
+          updateDisplay(data.result);
+          fxInput = String(data.result);
+          exprDisplay.textContent = "√" + n + " = " + data.result;
+          currentInput = fxInput;
+        }
+      } catch (e) {
+        display.classList.add('error');
+        display.textContent = 'Error';
+      }
+      justCalculated = true;
+      fxPendingFunc = null;
+    }
+
+    async function fxSquare() {
+      const n = parseFloat(fxInput);
+      exprDisplay.textContent = n + '² =';
+      try {
+        const res = await fetch('/api/square', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ n })
+        });
+        const data = await res.json();
+        updateDisplay(data.result);
+        fxInput = String(data.result);
+        exprDisplay.textContent = n + '² = ' + data.result;
+        currentInput = fxInput;
+      } catch (e) {
+        display.classList.add('error');
+        display.textContent = 'Error';
+      }
+      justCalculated = true;
+      fxPendingFunc = null;
     }
   </script>
 </body>
